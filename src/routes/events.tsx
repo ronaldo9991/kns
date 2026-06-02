@@ -4,6 +4,7 @@ import { PageHeader } from "@/components/Breadcrumb";
 import { EVENTS } from "@/lib/mockData";
 import { Calendar, MapPin } from "lucide-react";
 import { toast } from "sonner";
+import { useI18n } from "@/lib/i18n";
 
 export const Route = createFileRoute("/events")({
   head: () => ({ meta: [{ title: "Events — Kovai Nadar Sangam" }] }),
@@ -18,26 +19,38 @@ const past = [
 ];
 
 function EventsPage() {
+  const { t } = useI18n();
+  const ev = t.events;
+
   return (
     <SiteLayout>
-      <PageHeader title="Events & Community Meets" subtitle="Annual matrimony meets, cultural gatherings, health camps and business breakfasts." breadcrumb={[{ label: "Events" }]}/>
+      <PageHeader
+        title={ev.title}
+        subtitle={ev.subtitle}
+        breadcrumb={[{ label: t.nav.events }]}
+      />
       <div className="container-page py-10">
-        <h2 className="font-display text-2xl text-primary-deep">Upcoming</h2>
+        <h2 className="font-display text-2xl text-primary-deep">{ev.upcoming}</h2>
         <div className="mt-6 grid md:grid-cols-2 gap-5">
           {EVENTS.map((e) => (
             <article key={e.title} className="card-flat p-6 flex flex-col">
               <div className="flex items-center gap-3 text-xs text-primary-deep font-medium uppercase tracking-[0.12em]">
-                <span className="inline-flex items-center gap-1.5"><Calendar size={12}/> {e.date}</span>
-                <span className="inline-flex items-center gap-1.5"><MapPin size={12}/> {e.venue}</span>
+                <span className="inline-flex items-center gap-1.5"><Calendar size={12} /> {e.date}</span>
+                <span className="inline-flex items-center gap-1.5"><MapPin size={12} /> {e.venue}</span>
               </div>
               <h3 className="mt-3 font-display text-xl text-foreground">{e.title}</h3>
               <p className="mt-2 text-sm text-muted-foreground leading-relaxed flex-1">{e.desc}</p>
-              <button onClick={() => toast.success("Registered. We'll send venue details on WhatsApp.")} className="mt-5 btn-ghost self-start">Register</button>
+              <button
+                onClick={() => toast.success(ev.registeredToast)}
+                className="mt-5 btn-ghost self-start"
+              >
+                {ev.register}
+              </button>
             </article>
           ))}
         </div>
 
-        <h2 className="mt-16 font-display text-2xl text-primary-deep">Past events</h2>
+        <h2 className="mt-16 font-display text-2xl text-primary-deep">{ev.past}</h2>
         <div className="mt-6 grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {past.map((e) => (
             <div key={e.title} className="card-flat overflow-hidden">

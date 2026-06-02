@@ -85,6 +85,69 @@ const profileShape = z.object({
   location: z.string().optional(),
 });
 
+export const getMyMatrimonyProfileFn = createServerFn({ method: "GET" })
+  .inputValidator(z.object({ userId: z.number() }))
+  .handler(async ({ data }) => {
+    const { db, schema } = await getDb();
+    const rows = await db
+      .select()
+      .from(schema.matrimonyProfiles)
+      .where(eq(schema.matrimonyProfiles.userId, data.userId))
+      .limit(1);
+    return rows[0] ?? null;
+  });
+
+const upsertSchema = z.object({
+  userId: z.number(),
+  gender: z.enum(["Male", "Female"]),
+  name: z.string().min(2),
+  age: z.number().min(18).max(70),
+  height: z.string().optional(),
+  religion: z.string().optional(),
+  rasi: z.string().optional(),
+  star: z.string().optional(),
+  gotram: z.string().optional(),
+  education: z.string().optional(),
+  profession: z.string().optional(),
+  income: z.string().optional(),
+  location: z.string().optional(),
+  about: z.string().optional(),
+  expectations: z.string().optional(),
+  fatherName: z.string().optional(),
+  fatherJob: z.string().optional(),
+  motherName: z.string().optional(),
+  motherJob: z.string().optional(),
+  siblings: z.string().optional(),
+  phone: z.string().optional(),
+  address: z.string().optional(),
+});
+
+export const upsertMatrimonyProfileFn = createServerFn({ method: "POST" })
+  .inputValidator(upsertSchema)
+  .handler(async ({ data }) => {
+    const { db, schema } = await getDb();
+    const { userId, ...rest } = data;
+
+    const existing = await db
+      .select()
+      .from(schema.matrimonyProfiles)
+      .where(eq(schema.matrimonyProfiles.userId, userId))
+      .limit(1);
+
+    if (existing.length > 0) {
+      await db
+        .update(schema.matrimonyProfiles)
+        .set({ ...rest })
+        .where(eq(schema.matrimonyProfiles.userId, userId));
+      return { ok: true, profileId: existing[0].profileId, status: existing[0].status, isNew: false };
+    }
+
+    const allProfiles = await db.select().from(schema.matrimonyProfiles);
+    const profileId = `KNS-${1100 + allProfiles.length}`;
+    await db.insert(schema.matrimonyProfiles).values({ ...rest, userId, profileId, status: "pending" });
+    return { ok: true, profileId, status: "pending", isNew: true };
+  });
+
 export const getAiCompatibilityFn = createServerFn({ method: "POST" })
   .inputValidator(z.object({ profileA: profileShape, profileB: profileShape }))
   .handler(async ({ data }) => {

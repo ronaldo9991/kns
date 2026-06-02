@@ -16,6 +16,7 @@ import { Route as MembersRouteImport } from './routes/members'
 import { Route as MatrimonyRouteImport } from './routes/matrimony'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as EventsRouteImport } from './routes/events'
+import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
@@ -56,6 +57,11 @@ const EventsRoute = EventsRouteImport.update({
   path: '/events',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DashboardRoute = DashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminRoute = AdminRouteImport.update({
   id: '/admin',
   path: '/admin',
@@ -81,6 +87,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/admin': typeof AdminRoute
+  '/dashboard': typeof DashboardRoute
   '/events': typeof EventsRoute
   '/login': typeof LoginRoute
   '/matrimony': typeof MatrimonyRouteWithChildren
@@ -94,6 +101,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/admin': typeof AdminRoute
+  '/dashboard': typeof DashboardRoute
   '/events': typeof EventsRoute
   '/login': typeof LoginRoute
   '/matrimony': typeof MatrimonyRouteWithChildren
@@ -108,6 +116,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/admin': typeof AdminRoute
+  '/dashboard': typeof DashboardRoute
   '/events': typeof EventsRoute
   '/login': typeof LoginRoute
   '/matrimony': typeof MatrimonyRouteWithChildren
@@ -123,6 +132,7 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/admin'
+    | '/dashboard'
     | '/events'
     | '/login'
     | '/matrimony'
@@ -136,6 +146,7 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/admin'
+    | '/dashboard'
     | '/events'
     | '/login'
     | '/matrimony'
@@ -149,6 +160,7 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/admin'
+    | '/dashboard'
     | '/events'
     | '/login'
     | '/matrimony'
@@ -163,6 +175,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
   AdminRoute: typeof AdminRoute
+  DashboardRoute: typeof DashboardRoute
   EventsRoute: typeof EventsRoute
   LoginRoute: typeof LoginRoute
   MatrimonyRoute: typeof MatrimonyRouteWithChildren
@@ -223,6 +236,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EventsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin': {
       id: '/admin'
       path: '/admin'
@@ -270,6 +290,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
   AdminRoute: AdminRoute,
+  DashboardRoute: DashboardRoute,
   EventsRoute: EventsRoute,
   LoginRoute: LoginRoute,
   MatrimonyRoute: MatrimonyRouteWithChildren,

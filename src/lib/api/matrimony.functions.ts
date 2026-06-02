@@ -120,7 +120,7 @@ Profile B: ${profileB.name}, ${profileB.age} years, ${profileB.gender}
 Respond ONLY with JSON: {"score": <0-100 integer>, "summary": "<2 sentences>", "details": ["<point1>", "<point2>", "<point3>"]}`;
 
       const completion = await client.chat.completions.create({
-        model: process.env.OPENAI_MODEL ?? "gpt-4o-mini",
+        model: process.env.OPENAI_MODEL ?? "gpt-4o",
         messages: [{ role: "user", content: prompt }],
         max_tokens: 400,
         temperature: 0.4,

@@ -52,10 +52,19 @@ async function init(): Promise<DbConn> {
     return _conn;
   }
 
-  // Local dev: Bun's built-in SQLite (zero native compilation — always available)
+  // Local dev: Bun's built-in SQLite (zero native compilation — always available).
+  //
+  // IMPORTANT: we use `new Function("s","return import(s)")` instead of a
+  // literal dynamic import so that Rollup/Nitro's static analyser cannot trace
+  // the dependency graph into bun:sqlite or drizzle-orm/bun-sqlite.  If those
+  // modules appeared as static top-level imports in the Nitro bundle, Node.js
+  // on Railway would crash at startup (bun:sqlite doesn't exist in Node.js).
+  // This code path is NEVER reached on Railway because DATABASE_URL is always a
+  // postgres:// URL there; the guard above takes the Postgres branch first.
+  const _dynImport = new Function("s", "return import(s)") as (s: string) => Promise<any>;
   const [{ Database }, { drizzle }, fs, path] = await Promise.all([
-    import("bun:sqlite"),
-    import("drizzle-orm/bun-sqlite"),
+    _dynImport("bun:sqlite"),
+    _dynImport("drizzle-orm/bun-sqlite"),
     import("node:fs"),
     import("node:path"),
   ]);

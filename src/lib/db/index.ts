@@ -4,21 +4,17 @@ import { seedIfEmpty } from "./seed";
 
 /**
  * Database layer with two backends:
- *   - Production: PostgreSQL (Railway) when DATABASE_URL is a postgres:// URL
- *   - Local dev:  SQLite file (./data/local.db) otherwise
+ *   - Production (Railway): PostgreSQL when DATABASE_URL is a postgres:// URL
+ *   - Local dev: SQLite using Bun's built-in sqlite (no native compilation needed)
  *
- * The application query code is dialect-agnostic — it uses the schema object
- * returned by getDb(), and Drizzle's core operators (eq, and, desc, count…)
- * work identically across both. Drivers are imported lazily so the unused
- * native dependency is never loaded in the wrong environment.
+ * getDb() is async and returns { db, schema, dialect }.
+ * All server functions call:  const { db, schema } = await getDb();
  */
 
 export type Dialect = "pg" | "sqlite";
 export type Schema = typeof pgSchema;
 
 export type DbConn = {
-  // Drizzle instance — typed loosely because the concrete type differs per
-  // dialect, but the query surface used by the app is shared.
   db: any;
   schema: Schema;
   dialect: Dialect;
@@ -32,7 +28,6 @@ function resolveDialect(): Dialect {
   return url.startsWith("postgres://") || url.startsWith("postgresql://") ? "pg" : "sqlite";
 }
 
-/** Postgres always available in prod; SQLite always available locally. */
 export function hasDb() {
   return true;
 }
@@ -57,10 +52,10 @@ async function init(): Promise<DbConn> {
     return _conn;
   }
 
-  // SQLite (local development)
-  const [{ default: Database }, { drizzle }, fs, path] = await Promise.all([
-    import("better-sqlite3"),
-    import("drizzle-orm/better-sqlite3"),
+  // Local dev: Bun's built-in SQLite (zero native compilation — always available)
+  const [{ Database }, { drizzle }, fs, path] = await Promise.all([
+    import("bun:sqlite"),
+    import("drizzle-orm/bun-sqlite"),
     import("node:fs"),
     import("node:path"),
   ]);
@@ -68,7 +63,7 @@ async function init(): Promise<DbConn> {
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
   const file = process.env.SQLITE_PATH ?? path.join(dir, "local.db");
   const sqlite = new Database(file);
-  sqlite.pragma("journal_mode = WAL");
+  sqlite.exec("PRAGMA journal_mode = WAL;");
   ensureSqliteSchema(sqlite);
   const db = drizzle(sqlite, { schema: sqliteSchema });
   await seedIfEmpty({ db, schema: sqliteSchema as unknown as Schema, dialect });
@@ -82,7 +77,7 @@ export async function getDb(): Promise<DbConn> {
   return _initPromise;
 }
 
-/* ── Schema bootstrap (raw DDL, idempotent) ───────────────────────────── */
+/* ── Schema bootstrap (idempotent DDL) ──────────────────────────────── */
 
 async function ensurePgSchema(client: any) {
   await client.unsafe(`

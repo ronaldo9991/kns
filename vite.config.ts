@@ -16,13 +16,13 @@ export default defineConfig({
   // Without an explicit `nitro` option the deploy plugin is skipped outside the
   // Lovable sandbox, so we enable it here with the node-server preset.
   nitro: { preset: "node-server" },
-  // Keep native/server-only DB drivers out of the client and SSR bundles.
+  // Keep server-only DB drivers out of the client bundle.
   vite: {
     ssr: {
-      external: ["better-sqlite3", "postgres"],
+      external: ["postgres", "bun:sqlite"],
     },
     optimizeDeps: {
-      exclude: ["better-sqlite3", "postgres"],
+      exclude: ["postgres"],
     },
   },
 });

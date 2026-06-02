@@ -1,0 +1,166 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap");
+
+@theme inline {
+  --font-display: "Playfair Display", ui-serif, Georgia, serif;
+  --font-sans: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary-deep: var(--primary-deep);
+  --color-primary-soft: var(--primary-soft);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-ring-offset-background: var(--background);
+}
+
+:root {
+  --radius: 0.5rem;
+
+  /* Brand greens (locked palette) */
+  --primary-deep: oklch(0.38 0.09 152);     /* #1a5c3a deep green */
+  --primary: oklch(0.48 0.10 152);          /* #2d7a52 mid green  */
+  --primary-soft: oklch(0.95 0.025 152);    /* #e8f4ee light green */
+  --primary-foreground: oklch(1 0 0);
+
+  --background: oklch(1 0 0);                /* white */
+  --surface: oklch(0.985 0.005 150);         /* off-white #f7faf8 */
+  --foreground: oklch(0.18 0.01 150);        /* near #111 */
+
+  --card: oklch(1 0 0);
+  --card-foreground: var(--foreground);
+  --popover: oklch(1 0 0);
+  --popover-foreground: var(--foreground);
+
+  --secondary: var(--primary-soft);
+  --secondary-foreground: var(--primary-deep);
+
+  --muted: oklch(0.97 0.005 150);
+  --muted-foreground: oklch(0.45 0.02 150);
+
+  --accent: var(--primary-soft);
+  --accent-foreground: var(--primary-deep);
+
+  --destructive: oklch(0.55 0.20 27);
+  --destructive-foreground: oklch(1 0 0);
+
+  --border: oklch(0.92 0.01 150);
+  --input: oklch(0.92 0.01 150);
+  --ring: var(--primary);
+}
+
+@layer base {
+  * { border-color: var(--color-border); }
+  html { -webkit-font-smoothing: antialiased; }
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    font-feature-settings: "ss01", "cv01";
+  }
+  h1, h2, h3, h4, .font-display { font-family: var(--font-display); letter-spacing: -0.01em; }
+}
+
+/* xs breakpoint for very small phones */
+@custom-media --xs (min-width: 480px);
+
+@layer utilities {
+  .xs\:inline { display: none; }
+  @media (min-width: 480px) { .xs\:inline { display: inline; } .xs\:hidden { display: none; } }
+
+  .bg-primary-deep { background-color: var(--primary-deep); }
+  .bg-primary-soft { background-color: var(--primary-soft); }
+  .text-primary-deep { color: var(--primary-deep); }
+  .border-primary-deep { border-color: var(--primary-deep); }
+  .ring-primary-deep { --tw-ring-color: var(--primary-deep); }
+
+  .container-page { max-width: 1240px; margin-inline: auto; padding-inline: 1.25rem; }
+
+  .hairline { box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--primary-deep) 12%, transparent); }
+
+  .btn-primary {
+    display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
+    background: var(--primary-deep); color: var(--primary-foreground);
+    padding: .75rem 1.25rem; border-radius: 999px;
+    font-weight: 500; font-size: .95rem;
+    transition: background .2s ease, transform .2s ease;
+  }
+  .btn-primary:hover { background: color-mix(in oklab, var(--primary-deep) 88%, black); }
+
+  .btn-outline {
+    display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
+    background: transparent; color: var(--primary-foreground);
+    padding: .75rem 1.25rem; border-radius: 999px;
+    font-weight: 500; font-size: .95rem;
+    border: 1px solid color-mix(in oklab, white 60%, transparent);
+    transition: background .2s ease, border-color .2s ease;
+  }
+  .btn-outline:hover { background: color-mix(in oklab, white 12%, transparent); }
+
+  .btn-ghost {
+    display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
+    background: transparent; color: var(--primary-deep);
+    padding: .65rem 1rem; border-radius: 999px;
+    font-weight: 500; font-size: .9rem;
+    border: 1px solid color-mix(in oklab, var(--primary-deep) 20%, transparent);
+  }
+  .btn-ghost:hover { background: var(--primary-soft); }
+
+  .chip {
+    display: inline-flex; align-items: center; gap: .4rem;
+    padding: .25rem .65rem; border-radius: 999px;
+    background: var(--primary-soft); color: var(--primary-deep);
+    font-size: .72rem; letter-spacing: .04em; text-transform: uppercase; font-weight: 600;
+  }
+
+  .card-flat {
+    background: var(--card); border: 1px solid var(--border); border-radius: 1rem;
+  }
+
+  .leaf-mark {
+    width: 28px; height: 28px; border-radius: 8px;
+    background: var(--primary-deep);
+    display: inline-flex; align-items: center; justify-content: center; color: white;
+  }
+
+  /* Subtle animated stat reveal */
+  @keyframes count-rise {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .reveal { animation: count-rise .6s ease both; }
+
+  /* Decorative dotted grid */
+  .dot-grid {
+    background-image: radial-gradient(color-mix(in oklab, white 25%, transparent) 1px, transparent 1px);
+    background-size: 22px 22px;
+  }
+}

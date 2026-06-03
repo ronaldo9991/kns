@@ -60,6 +60,11 @@ export const createEventFn = createServerFn({ method: "POST" })
     return { ok: true, id: event.id };
   });
 
+export const getAdminEventsFn = createServerFn({ method: "GET" }).handler(async () => {
+  const { db, schema } = await getDb();
+  return db.select().from(schema.events).orderBy(desc(schema.events.date));
+});
+
 export const deleteEventFn = createServerFn({ method: "POST" })
   .inputValidator(z.object({ id: z.number() }))
   .handler(async ({ data }) => {

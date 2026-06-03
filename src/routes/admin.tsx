@@ -13,11 +13,10 @@ import {
 import {
   getAdminStatsFn, getAdminMatrimonyFn, getAdminMembersFn,
   getAdminScholarshipsFn, updateScholarshipStatusFn,
-  createEventFn, addMemberFn
+  createEventFn, deleteEventFn, addMemberFn, getAdminEventsFn
 } from "@/lib/api/admin.functions";
 import { updateProfileStatusFn } from "@/lib/api/matrimony.functions";
 import { loginFn } from "@/lib/api/auth.functions";
-import { EVENTS } from "@/lib/mockData";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({ meta: [{ title: "Admin — Kovai Nadar Sangam" }] }),
@@ -513,7 +512,15 @@ function EventsTab() {
   const [showCreate, setShowCreate] = useState(false);
   const [eventForm, setEventForm] = useState({ title: "", description: "", date: "", venue: "" });
   const [creating, setCreating] = useState(false);
-  const [events, setEvents] = useState(EVENTS);
+  const [events, setEvents] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  function loadEvents() {
+    setLoading(true);
+    getAdminEventsFn().then(setEvents).catch(() => toast.error("Failed to load events")).finally(() => setLoading(false));
+  }
+
+  useEffect(() => { loadEvents(); }, []);
 
   async function handleCreateEvent(e: React.FormEvent) {
     e.preventDefault();
@@ -523,10 +530,21 @@ function EventsTab() {
       toast.success("Event created successfully");
       setShowCreate(false);
       setEventForm({ title: "", description: "", date: "", venue: "" });
+      loadEvents();
     } catch {
       toast.error("Failed to create event");
     } finally {
       setCreating(false);
+    }
+  }
+
+  async function handleDeleteEvent(id: number) {
+    try {
+      await deleteEventFn({ data: { id } });
+      toast.success("Event deleted");
+      loadEvents();
+    } catch {
+      toast.error("Failed to delete event");
     }
   }
 
@@ -568,31 +586,34 @@ function EventsTab() {
         </div>
       )}
 
-      <div className="grid gap-4">
-        {events.map((ev, i) => (
-          <div key={i} className="bg-white rounded-2xl border border-border p-5 flex items-start justify-between gap-4">
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 mb-1">
-                <span className="inline-flex px-2 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-700">Upcoming</span>
+      {loading ? (
+        <div className="bg-white rounded-2xl border border-border p-8 text-center text-muted-foreground text-sm">Loading…</div>
+      ) : events.length === 0 ? (
+        <div className="bg-white rounded-2xl border border-border p-8 text-center text-muted-foreground text-sm">No events yet. Create one above.</div>
+      ) : (
+        <div className="grid gap-4">
+          {events.map((ev: any) => (
+            <div key={ev.id} className="bg-white rounded-2xl border border-border p-5 flex items-start justify-between gap-4">
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="inline-flex px-2 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-700 capitalize">{ev.status ?? "upcoming"}</span>
+                </div>
+                <h3 className="font-semibold text-foreground">{ev.title}</h3>
+                {ev.description && <p className="text-sm text-muted-foreground mt-1">{ev.description}</p>}
+                <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
+                  {ev.date && <span className="flex items-center gap-1"><Calendar size={11} /> {new Date(ev.date).toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" })}</span>}
+                  {ev.venue && <span>{ev.venue}</span>}
+                </div>
               </div>
-              <h3 className="font-semibold text-foreground">{ev.title}</h3>
-              <p className="text-sm text-muted-foreground mt-1">{ev.desc}</p>
-              <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
-                <span className="flex items-center gap-1"><Calendar size={11} /> {ev.date}</span>
-                <span>{ev.venue}</span>
+              <div className="flex gap-2 flex-shrink-0">
+                <button onClick={() => handleDeleteEvent(ev.id)} className="p-2 rounded-lg border border-red-200 hover:bg-red-50 transition-colors text-red-500">
+                  <Trash2 size={14} />
+                </button>
               </div>
             </div>
-            <div className="flex gap-2 flex-shrink-0">
-              <button className="p-2 rounded-lg border border-border hover:bg-muted transition-colors text-muted-foreground">
-                <Edit2 size={14} />
-              </button>
-              <button onClick={() => { setEvents(events.filter((_, j) => j !== i)); toast.success("Event removed"); }} className="p-2 rounded-lg border border-red-200 hover:bg-red-50 transition-colors text-red-500">
-                <Trash2 size={14} />
-              </button>
-            </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

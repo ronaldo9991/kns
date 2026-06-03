@@ -15,14 +15,14 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "Kovai Nadar Sangam — Community Trust, Coimbatore" },
-      { name: "description", content: "Matrimony, scholarships, events and business network for Hindu & Christian Nadar families of Coimbatore." },
+      { name: "description", content: "Matrimony, our school, events and business network for Hindu & Christian Nadar families of Coimbatore." },
     ],
   }),
   component: Home,
 });
 
 const SERVICE_ICONS = [Heart, Users, GraduationCap, Calendar, Briefcase, HandHeart];
-const SERVICE_LINKS = ["/matrimony", "/members", "/scholarships", "/events", "/members", "/about"];
+const SERVICE_LINKS = ["/matrimony", "/members", "/school", "/events", "/members", "/about"];
 
 function Home() {
   const { t } = useI18n();

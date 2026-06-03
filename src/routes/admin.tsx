@@ -12,7 +12,6 @@ import {
 } from "lucide-react";
 import {
   getAdminStatsFn, getAdminMatrimonyFn, getAdminMembersFn,
-  getAdminScholarshipsFn, updateScholarshipStatusFn,
   createEventFn, deleteEventFn, addMemberFn, getAdminEventsFn
 } from "@/lib/api/admin.functions";
 import { updateProfileStatusFn } from "@/lib/api/matrimony.functions";
@@ -23,7 +22,7 @@ export const Route = createFileRoute("/admin")({
   component: AdminRoute,
 });
 
-type Tab = "dashboard" | "matrimony" | "members" | "events" | "scholarships";
+type Tab = "dashboard" | "matrimony" | "members" | "events" | "school";
 
 function AdminRoute() {
   const { user, isAdmin, login, logout } = useAuth();
@@ -113,7 +112,7 @@ function AdminPanel({ user, onLogout }: { user: any; onLogout: () => void }) {
     { key: "matrimony", label: "Matrimony", icon: Heart },
     { key: "members", label: "Members", icon: Users },
     { key: "events", label: "Events", icon: Calendar },
-    { key: "scholarships", label: "Scholarships", icon: GraduationCap },
+    { key: "school", label: "Our School", icon: GraduationCap },
   ];
 
   return (
@@ -197,7 +196,7 @@ function AdminPanel({ user, onLogout }: { user: any; onLogout: () => void }) {
           {tab === "matrimony" && <MatrimonyTab />}
           {tab === "members" && <MembersTab />}
           {tab === "events" && <EventsTab />}
-          {tab === "scholarships" && <ScholarshipsTab />}
+          {tab === "school" && <SchoolTab />}
         </main>
       </div>
     </div>
@@ -213,10 +212,10 @@ function Dashboard() {
 
   const cards = stats
     ? [
-        { label: "Pending Approvals", value: stats.pendingMatrimony + stats.pendingScholarships, icon: Clock, color: "text-orange-500", bg: "bg-orange-50" },
+        { label: "Pending Approvals", value: stats.pendingMatrimony, icon: Clock, color: "text-orange-500", bg: "bg-orange-50" },
         { label: "Total Members", value: stats.totalMembers, icon: Users, color: "text-blue-600", bg: "bg-blue-50" },
         { label: "Upcoming Events", value: stats.upcomingEvents, icon: Calendar, color: "text-purple-600", bg: "bg-purple-50" },
-        { label: "Pending Scholarships", value: stats.pendingScholarships, icon: GraduationCap, color: "text-green-600", bg: "bg-green-50" },
+        { label: "Total Users", value: stats.totalUsers, icon: GraduationCap, color: "text-green-600", bg: "bg-green-50" },
       ]
     : [];
 
@@ -271,10 +270,10 @@ function Dashboard() {
           </div>
           <div className="p-4 grid grid-cols-2 gap-3">
             {[
-              { label: "Review Matrimony", desc: "3 pending", to: "matrimony", icon: Heart, color: "bg-pink-50 text-pink-600" },
+              { label: "Review Matrimony", desc: "Pending profiles", to: "matrimony", icon: Heart, color: "bg-pink-50 text-pink-600" },
               { label: "Add Member", desc: "Directory", to: "members", icon: Users, color: "bg-blue-50 text-blue-600" },
               { label: "New Event", desc: "Create post", to: "events", icon: Calendar, color: "bg-purple-50 text-purple-600" },
-              { label: "Scholarships", desc: "2 pending", to: "scholarships", icon: GraduationCap, color: "bg-green-50 text-green-600" },
+              { label: "Our School", desc: "School info", to: "school", icon: GraduationCap, color: "bg-green-50 text-green-600" },
             ].map(({ label, desc, to, icon: Icon, color }) => (
               <button key={label} className="p-4 rounded-xl border border-border hover:border-primary-deep/30 hover:bg-primary-soft/30 transition-all text-left group">
                 <div className={`w-8 h-8 rounded-lg ${color} flex items-center justify-center mb-2`}>
@@ -618,87 +617,59 @@ function EventsTab() {
   );
 }
 
-/* ── Scholarships Tab ── */
-function ScholarshipsTab() {
-  const [apps, setApps] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  function load() {
-    setLoading(true);
-    getAdminScholarshipsFn().then(setApps).catch(() => toast.error("Failed to load")).finally(() => setLoading(false));
-  }
-
-  useEffect(() => { load(); }, []);
-
-  async function handleStatus(id: number, status: "pending" | "under_review" | "approved" | "rejected") {
-    try {
-      await updateScholarshipStatusFn({ data: { id, status } });
-      toast.success(`Status updated to ${status}`);
-      load();
-    } catch {
-      toast.error("Update failed");
-    }
-  }
-
-  const statusColors: Record<string, string> = {
-    pending: "bg-orange-100 text-orange-700",
-    under_review: "bg-blue-100 text-blue-700",
-    approved: "bg-green-100 text-green-700",
-    rejected: "bg-red-100 text-red-700",
-  };
-
+/* ── School Tab ── */
+function SchoolTab() {
+  const details = [
+    { label: "School Name", value: "Sangamam Matriculation School" },
+    { label: "Managed by", value: "Kovai Nadar Sangam" },
+    { label: "Classes", value: "Nursery to Class 12" },
+    { label: "Board", value: "Tamil Nadu State Board (Matriculation)" },
+    { label: "Medium", value: "English" },
+    { label: "Type", value: "Co-educational Day School" },
+    { label: "School Hours", value: "8:30 am – 3:30 pm" },
+    { label: "Phone", value: "0422-2333185" },
+    { label: "Annual Fees", value: "₹25,000 + ₹13,800" },
+    { label: "Address", value: "Sanganoor Road, Tatabad, Coimbatore — 641027" },
+  ];
+  const facilities = [
+    "Computer Laboratory", "Integrated Science Laboratory",
+    "Mathematics Laboratory", "Robotics Lab",
+    "Library", "Digital Smart Classrooms",
+  ];
   return (
-    <div className="bg-white rounded-2xl border border-border overflow-hidden">
-      <div className="px-6 py-4 border-b border-border">
-        <h2 className="font-semibold text-sm">Scholarship Applications</h2>
-      </div>
-      {loading ? (
-        <div className="p-8 text-center text-muted-foreground text-sm">Loading…</div>
-      ) : (
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead className="bg-muted/40 text-left text-xs uppercase tracking-wide text-muted-foreground">
-              <tr>
-                <th className="px-6 py-3">ID</th>
-                <th className="px-4 py-3">Student</th>
-                <th className="px-4 py-3">Institution</th>
-                <th className="px-4 py-3">Marks</th>
-                <th className="px-4 py-3">Income / yr</th>
-                <th className="px-4 py-3">Status</th>
-                <th className="px-4 py-3">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border">
-              {apps.map((a: any) => (
-                <tr key={a.id} className="hover:bg-muted/20 transition-colors">
-                  <td className="px-6 py-3 font-mono text-xs text-muted-foreground">SCH-{a.id}</td>
-                  <td className="px-4 py-3 font-medium">{a.studentName}</td>
-                  <td className="px-4 py-3">{a.school ?? "—"}</td>
-                  <td className="px-4 py-3">{a.marks ? `${parseFloat(a.marks)}%` : "—"}</td>
-                  <td className="px-4 py-3">{a.annualIncome ? `₹${parseInt(a.annualIncome).toLocaleString()}` : "—"}</td>
-                  <td className="px-4 py-3">
-                    <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium capitalize ${statusColors[a.status] ?? "bg-muted text-muted-foreground"}`}>
-                      {a.status.replace("_", " ")}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3">
-                    <select
-                      value={a.status}
-                      onChange={(e) => handleStatus(a.id, e.target.value as any)}
-                      className="text-xs border border-border rounded-lg px-2 py-1.5 bg-white focus:outline-none"
-                    >
-                      <option value="pending">Pending</option>
-                      <option value="under_review">Under Review</option>
-                      <option value="approved">Approved</option>
-                      <option value="rejected">Rejected</option>
-                    </select>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+    <div className="space-y-6">
+      <div className="bg-white rounded-2xl border border-border overflow-hidden">
+        <div className="bg-gradient-to-r from-primary-deep to-primary px-6 py-5">
+          <h2 className="font-display text-xl text-white">Sangamam Matriculation School</h2>
+          <p className="text-white/70 text-sm mt-0.5">Managed by Kovai Nadar Sangam · Tatabad, Coimbatore</p>
         </div>
-      )}
+        <div className="p-6 grid sm:grid-cols-2 gap-3">
+          {details.map(({ label, value }) => (
+            <div key={label} className="flex items-start gap-3 p-3 rounded-xl bg-surface border border-border">
+              <div className="flex-1 min-w-0">
+                <div className="text-xs text-muted-foreground">{label}</div>
+                <div className="text-sm font-medium mt-0.5">{value}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="bg-white rounded-2xl border border-border p-6">
+        <h3 className="font-semibold text-sm mb-4">Facilities</h3>
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          {facilities.map((f) => (
+            <div key={f} className="flex items-center gap-2 p-3 rounded-xl bg-surface border border-border text-sm">
+              <GraduationCap size={13} className="text-primary-deep flex-shrink-0" />
+              {f}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="bg-primary-soft/60 border border-primary-deep/15 rounded-2xl p-5 text-sm text-muted-foreground">
+        To update school details, contact the sangam office or edit the school page directly in the codebase (<code className="text-xs bg-white/70 px-1 rounded">src/routes/school.tsx</code>).
+      </div>
     </div>
   );
 }

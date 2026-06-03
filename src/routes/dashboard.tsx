@@ -273,9 +273,9 @@ function DashboardPage() {
             },
             {
               icon: GraduationCap,
-              label: lang === "ta" ? "உதவித்தொகை" : "Scholarships",
-              sub: lang === "ta" ? "கல்வி உதவிக்கு விண்ணப்பிக்கவும்" : "Apply for education aid",
-              to: "/scholarships",
+              label: lang === "ta" ? "எங்கள் பள்ளி" : "Our School",
+              sub: lang === "ta" ? "சங்கமம் மெட்ரிகுலேஷன் பள்ளி" : "Sangamam Matriculation School",
+              to: "/school",
               color: "bg-green-50 text-green-600",
             },
           ].map(({ icon: Icon, label, sub, to, color }) => (

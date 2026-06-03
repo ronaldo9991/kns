@@ -31,7 +31,7 @@ export function Navbar() {
     { to: "/matrimony", label: t.nav.matrimony },
     { to: "/members", label: t.nav.members },
     { to: "/events", label: t.nav.events },
-    { to: "/scholarships", label: t.nav.scholarships },
+    { to: "/school", label: t.nav.school },
   ];
 
   function handleLogout() {

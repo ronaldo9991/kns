@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as SchoolRouteImport } from './routes/school'
 import { Route as ScholarshipsRouteImport } from './routes/scholarships'
 import { Route as RegisterRouteImport } from './routes/register'
 import { Route as MembersRouteImport } from './routes/members'
@@ -25,6 +26,11 @@ import { Route as MatrimonyRegisterRouteImport } from './routes/matrimony.regist
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SchoolRoute = SchoolRouteImport.update({
+  id: '/school',
+  path: '/school',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ScholarshipsRoute = ScholarshipsRouteImport.update({
@@ -94,6 +100,7 @@ export interface FileRoutesByFullPath {
   '/members': typeof MembersRoute
   '/register': typeof RegisterRoute
   '/scholarships': typeof ScholarshipsRoute
+  '/school': typeof SchoolRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/matrimony/register': typeof MatrimonyRegisterRoute
 }
@@ -108,6 +115,7 @@ export interface FileRoutesByTo {
   '/members': typeof MembersRoute
   '/register': typeof RegisterRoute
   '/scholarships': typeof ScholarshipsRoute
+  '/school': typeof SchoolRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/matrimony/register': typeof MatrimonyRegisterRoute
 }
@@ -123,6 +131,7 @@ export interface FileRoutesById {
   '/members': typeof MembersRoute
   '/register': typeof RegisterRoute
   '/scholarships': typeof ScholarshipsRoute
+  '/school': typeof SchoolRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/matrimony/register': typeof MatrimonyRegisterRoute
 }
@@ -139,6 +148,7 @@ export interface FileRouteTypes {
     | '/members'
     | '/register'
     | '/scholarships'
+    | '/school'
     | '/sitemap.xml'
     | '/matrimony/register'
   fileRoutesByTo: FileRoutesByTo
@@ -153,6 +163,7 @@ export interface FileRouteTypes {
     | '/members'
     | '/register'
     | '/scholarships'
+    | '/school'
     | '/sitemap.xml'
     | '/matrimony/register'
   id:
@@ -167,6 +178,7 @@ export interface FileRouteTypes {
     | '/members'
     | '/register'
     | '/scholarships'
+    | '/school'
     | '/sitemap.xml'
     | '/matrimony/register'
   fileRoutesById: FileRoutesById
@@ -182,6 +194,7 @@ export interface RootRouteChildren {
   MembersRoute: typeof MembersRoute
   RegisterRoute: typeof RegisterRoute
   ScholarshipsRoute: typeof ScholarshipsRoute
+  SchoolRoute: typeof SchoolRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
 }
 
@@ -192,6 +205,13 @@ declare module '@tanstack/react-router' {
       path: '/sitemap.xml'
       fullPath: '/sitemap.xml'
       preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/school': {
+      id: '/school'
+      path: '/school'
+      fullPath: '/school'
+      preLoaderRoute: typeof SchoolRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/scholarships': {
@@ -297,6 +317,7 @@ const rootRouteChildren: RootRouteChildren = {
   MembersRoute: MembersRoute,
   RegisterRoute: RegisterRoute,
   ScholarshipsRoute: ScholarshipsRoute,
+  SchoolRoute: SchoolRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
 }
 export const routeTree = rootRouteImport

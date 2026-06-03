@@ -34,7 +34,7 @@ export function Footer() {
             <li><Link to="/matrimony" className="hover:text-white">Matrimony</Link></li>
             <li><Link to="/members" className="hover:text-white">Member Directory</Link></li>
             <li><Link to="/events" className="hover:text-white">Events</Link></li>
-            <li><Link to="/scholarships" className="hover:text-white">Scholarships</Link></li>
+            <li><Link to="/school" className="hover:text-white">Our School</Link></li>
             <li><Link to="/about" className="hover:text-white">About</Link></li>
           </ul>
         </div>

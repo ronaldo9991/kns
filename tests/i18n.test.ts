@@ -47,7 +47,7 @@ describe("i18n completeness", () => {
       // Skip keys where English and Tamil are legitimately the same
       // (numbers, proper nouns that don't change: "1952", "42 / 1952", email, phone)
       if (typeof en === "string" && typeof ta === "string" && en === ta) {
-        const exemptions = ["1952", "42 / 1952", "office@kovainadarsangam.org", "0422-2491297 · 0422-2491298", "349, Dr. Radhakrishna Road", "Mon–Sat", "English"];
+        const exemptions = ["1952", "42 / 1952", "office@kovainadarsangam.org", "0422-2491297 · 0422-2491298", "349, Dr. Radhakrishna Road", "Mon–Sat", "English", "₹25,000", "0422-2333185"];
         if (!exemptions.some((e) => en.includes(e))) {
           untranslated.push(k);
         }
@@ -59,7 +59,7 @@ describe("i18n completeness", () => {
 
 describe("nav keys", () => {
   test("all nav items translated", () => {
-    const navKeys = ["home", "matrimony", "members", "events", "scholarships", "about", "admin"] as const;
+    const navKeys = ["home", "matrimony", "members", "events", "school", "about", "admin"] as const;
     for (const key of navKeys) {
       expect(dict.ta.nav[key]).toBeTruthy();
       expect(dict.ta.nav[key]).not.toBe(dict.en.nav[key]);
@@ -67,15 +67,15 @@ describe("nav keys", () => {
   });
 });
 
-describe("scholarship steps", () => {
-  test("both languages have 4 steps", () => {
-    expect(dict.en.scholarships.steps.length).toBe(4);
-    expect(dict.ta.scholarships.steps.length).toBe(4);
+describe("school section", () => {
+  test("both languages have 6 facilities", () => {
+    expect(dict.en.school.facilityList.length).toBe(6);
+    expect(dict.ta.school.facilityList.length).toBe(6);
   });
 
-  test("Tamil steps differ from English steps", () => {
-    dict.en.scholarships.steps.forEach((step, i) => {
-      expect(dict.ta.scholarships.steps[i]).not.toBe(step);
+  test("Tamil facility names differ from English", () => {
+    dict.en.school.facilityList.forEach((item, i) => {
+      expect(dict.ta.school.facilityList[i]).not.toBe(item);
     });
   });
 });
